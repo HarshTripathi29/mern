@@ -1,26 +1,33 @@
 const express = require("express");
 const app = express();
 const router = require("./router/auth-router");
+const contactRoute = require("./router/contact-router");
+const cors = require("cors");
 const connectDb = require("./utils/db")
-
+const errorMiddleware = require("./middlewares/error-middleware");
 
 app.use(express.json());
+//Mount the Router: To use the router in your main Express app, you can "mount" it at a specific URL prefix
 app.use("/api/auth", router);
+app.use("/api/form", contactRoute);
 
-// app.get("/", (req,res)=>{
-//     res.send("welcome to the server");
-// })
+app.use(errorMiddleware);
 
-// app.get("/register",(req, res)=>{
-//     res.send("welcome to the registration page");
-// })
+const PORT = 5000;
 
-const port = 3000;
+const corsOptions = {
+  origin: "http://localhost:5173", 
+  methods: "GET, POST, PUT, DELETE, PATCH, HEAD", 
+  credentials: true, 
+};
+  
+app.use(cors(corsOptions));
 
-
-connectDb().then(()=>
-    {
-    app.listen(port, ()=>{
-    console.log(`server is running at  ${port}`);
-    });
+connectDb().then(() => {
+  app.listen(PORT, () => {
+    console.log(`server is running at port: ${PORT}`);
+  });
 });
+
+
+// to get the json data in express app.
